@@ -9,7 +9,7 @@ syms s
 % Set dominant poles (complex conjugate pair)
 DOMINANT_POLES = (s+1-8j) * (s+1+8j);
 % Add nondominant poles for higher-order transfer function
-HIGHER_ORDER_POLES = (s+7) * (s+6-9j) * (s+6+9j) ...
+HIGHER_ORDER_POLES = (s+7) * (s+5-15j) * (s+5+15j) ...
     * DOMINANT_POLES;
 % Add zeros into higher-order transfer function
 ZEROS = (s+10);
