@@ -5,6 +5,8 @@
 % It should be removed before the submission, once we decide on the transfer function to use.
 % Edit these expressions to try different transfer functions: DOMINANT_POLES, HIGHER_ORDER_POLES, ZEROS
 
+% Set DC gain (set this to 1 to easily read percentage overshoot)
+DC_GAIN = 1;
 syms s
 % Set dominant poles (complex conjugate pair)
 DOMINANT_POLES = (s+1-8j) * (s+1+8j);
@@ -14,16 +16,12 @@ HIGHER_ORDER_POLES = (s+7) * (s+5-15j) * (s+5+15j) ...
 % Add zeros into higher-order transfer function
 ZEROS = (s+10);
 
-expanded_ho = expand(HIGHER_ORDER_POLES);
-expanded_dp = expand(DOMINANT_POLES);
-expanded_zeros = expand(ZEROS);
+K = DC_GAIN * (subs(expand(ZEROS), s, 0) / subs(expand(HIGHER_ORDER_POLES), s, 0));
+denominator1 = sym2poly(K * expand(HIGHER_ORDER_POLES));
+numerator1 = sym2poly(expand(ZEROS));
 
-denominator1 = sym2poly(expanded_ho);
-denominator2 = sym2poly(expanded_dp);
-numerator1 = sym2poly(expanded_zeros);
-% Match DC gain of higher-order system
-DC_gain = subs(expanded_zeros, s, 0) / subs(expanded_ho, s, 0);
-numerator2 = sym2poly(DC_gain * denominator2(end));
+denominator2 = sym2poly(expand(DOMINANT_POLES));
+numerator2 = sym2poly(DC_GAIN * denominator2(end) + 0*s);
 
 
 %% Functions for time-domain and s-domain analysis
@@ -38,7 +36,8 @@ function plot_step_response(n1, d1, n2, d2)
     sys1 = tf(n1, d1);
     sys2 = tf(n2, d2);
     % Use stepplot function provided by Control System Toolbox (unit step response)
-    stepplot(sys1, sys2)
+    figure;
+    stepplot(sys1, sys2);
     legend('Higher Order System', 'Dominant Poles Approximation');
     grid;
     % TODO: Label the plot better...
@@ -51,7 +50,7 @@ function plot_poles_zeros(n1, d1, d2)
     dominantpoles = roots(d2);
     % Create a new figure so that the time-domain plot can be accessed separately
     figure;
-    title('Poles and Zeros');
+    title({'Pole-Zero Plot', ''}); % Empty string in cell array adds vertical padding
     xlabel('\sigma');
     ylabel('j\omega');
     grid;
@@ -60,14 +59,14 @@ function plot_poles_zeros(n1, d1, d2)
     ax.XAxisLocation = 'origin';
     ax.YAxisLocation = 'origin';
     % Change figure limits to square
-    max_extent = max(abs(poles));
+    max_extent = max(abs(poles))+1;
     xlim([-max_extent max_extent]);
     ylim([-max_extent max_extent]);
     % Plot poles and zeros with appropriate markers
     hold on;
-    plot(real(zeros), imag(zeros), 'ro', 'MarkerSize', 10, 'LineWidth', 1);
-    plot(real(poles), imag(poles), 'rx', 'MarkerSize', 10, 'LineWidth', 1);
-    plot(real(dominantpoles), imag(dominantpoles), 'bx', 'MarkerSize', 10, 'LineWidth', 1);
+    plot(real(zeros), imag(zeros), 'bo', 'MarkerSize', 10, 'LineWidth', 1);
+    plot(real(poles), imag(poles), 'bx', 'MarkerSize', 10, 'LineWidth', 1);
+    plot(real(dominantpoles), imag(dominantpoles), 'rx', 'MarkerSize', 10, 'LineWidth', 1);
     legend('Poles', 'Zeros', 'Dominant Poles')
     % Add coordinate labels to all points
     poi = [zeros; poles; dominantpoles];
