@@ -6,17 +6,17 @@
 % Edit these expressions to try different transfer functions: DOMINANT_POLES, HIGHER_ORDER_POLES, ZEROS
 
 % Set DC gain (set this to 1 to easily read percentage overshoot)
-DC_GAIN = 1;
+DC_GAIN = 100;
 syms s
 % Set dominant poles (complex conjugate pair)
-DOMINANT_POLES = (s+1-8j) * (s+1+8j);
+DOMINANT_POLES = (s+1-4j) * (s+1+4j);
 % Add nondominant poles for higher-order transfer function
 HIGHER_ORDER_POLES = (s+7) * (s+5-15j) * (s+5+15j) ...
     * DOMINANT_POLES;
 % Add zeros into higher-order transfer function
 ZEROS = (s+10);
 
-K = DC_GAIN * (subs(expand(ZEROS), s, 0) / subs(expand(HIGHER_ORDER_POLES), s, 0));
+K = 1/DC_GAIN * (subs(expand(ZEROS), s, 0) / subs(expand(HIGHER_ORDER_POLES), s, 0));
 denominator1 = sym2poly(K * expand(HIGHER_ORDER_POLES));
 numerator1 = sym2poly(expand(ZEROS));
 
