@@ -84,6 +84,19 @@ function plot_poles_zeros(n1, d1, d2)
     ylim([-max_extent max_extent]);
     % Plot poles and zeros with appropriate markers
     hold on;
+    count = 0;
+    for z = poles.'
+        if imag(z) > 0.1
+            count = count+1;
+            % Draw circles of natural frequency
+            r = abs(z);
+            theta = 0:0.01:2*pi;
+            x_circle = r * cos(theta);
+            y_circle = r * sin(theta);
+            plot(x_circle, y_circle, 'LineStyle', '--', 'HandleVisibility', 'off');
+            text(r*0.707+0.2, r*0.707+0.2, sprintf('\\omega_{n%d} = 2\\pi\\cdot%.3f', count, r/2/pi));
+        end
+    end
     plot(real(poles), imag(poles), 'bx', 'MarkerSize', 9, 'LineWidth', 1);
     plot(real(zeros), imag(zeros), 'bo', 'MarkerSize', 7, 'LineWidth', 1);
     plot(real(dominantpoles), imag(dominantpoles), 'rx', 'MarkerSize', 9, 'LineWidth', 1);
