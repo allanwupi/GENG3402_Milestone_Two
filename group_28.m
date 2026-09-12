@@ -11,10 +11,10 @@ syms s
 % Set dominant poles (complex conjugate pair)
 DOMINANT_POLES = (s+1-4j) * (s+1+4j);
 % Add nondominant poles for higher-order transfer function
-HIGHER_ORDER_POLES = (s+7) * (s+5-15j) * (s+5+15j) ...
+HIGHER_ORDER_POLES = (s+7) * (s+5-9j) * (s+5+9j) ...
     * DOMINANT_POLES;
 % Add zeros into higher-order transfer function
-ZEROS = (s+10);
+ZEROS = (s+5)*(s+6+8j)*(s+6-8j);
 
 K = 1/DC_GAIN * (subs(expand(ZEROS), s, 0) / subs(expand(HIGHER_ORDER_POLES), s, 0));
 denominator1 = sym2poly(K * expand(HIGHER_ORDER_POLES));
@@ -70,8 +70,10 @@ function plot_poles_zeros(n1, d1, d2)
     legend('Poles', 'Zeros', 'Dominant Poles')
     % Add coordinate labels to all points
     poi = [zeros; poles; dominantpoles];
-    labels = compose("%.1f + j%.1f", real(poi), imag(poi));
-    text(real(poi), imag(poi)+0.75, labels, 'HorizontalAlignment', 'center', 'FontSize', 10);
+    signs = repmat("+", size(poi));
+    signs(imag(poi) < 0) = "-";
+    labels = compose("%.0f%sj%.0f", real(poi), signs, abs(imag(poi)));
+    text(real(poi), imag(poi)+1, labels, 'HorizontalAlignment', 'center', 'FontSize', 10);
 end
 
 function get_transient_parameters(n1, d1, n2, d2)
