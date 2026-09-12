@@ -85,9 +85,9 @@ function plot_poles_zeros(n1, d1, d2)
     ylim([-max_extent max_extent]);
     % Plot poles and zeros with appropriate markers
     hold on;
+    plot(real(poles), imag(poles), 'bx', 'MarkerSize', 9, 'LineWidth', 1);
     plot(real(zeros), imag(zeros), 'bo', 'MarkerSize', 7, 'LineWidth', 1);
-    plot(real(poles), imag(poles), 'bx', 'MarkerSize', 10, 'LineWidth', 1);
-    plot(real(dominantpoles), imag(dominantpoles), 'rx', 'MarkerSize', 10, 'LineWidth', 1);
+    plot(real(dominantpoles), imag(dominantpoles), 'rx', 'MarkerSize', 9, 'LineWidth', 1);
     legend('Poles', 'Zeros', 'Dominant Poles')
     % Add coordinate labels to all points
     poi = [zeros; poles];
