@@ -32,14 +32,15 @@ numerator2 = sym2poly(DC_GAIN * denominator2(end) + 0*s);
 % - Print the transient response parameters (PO, td, tr, ts, ess)
 % - Print the s-domain parameters (wn, zeta) for each complex conjugate pole pair
 
-function plot_step_response(n1, d1, n2, d2)
+function [S1, S2] = plot_step_response(n1, d1, n2, d2)
     sys1 = tf(n1, d1);
     sys2 = tf(n2, d2);
     % Use stepplot function provided by Control System Toolbox (unit step response)
     figure;
     stepplot(sys1, sys2);
+    set(gcf, 'Color', 'w')
     grid;
-    legend('Higher Order System', 'Dominant Poles Approximation');
+    legend('5th Order System', 'Second Order Approximation');
     hold;
     yss = n1(end) / d1(end);
     yline([yss*0.9 yss yss*1.1], '--', {'0.9y_{ss}', 'y_{ss}', '1.1y_{ss}'}, ...
@@ -62,6 +63,9 @@ function plot_step_response(n1, d1, n2, d2)
         'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'bottom');
     plot(t1(tpeak1), ymax1, 'Marker', '.', 'Color', '#1171BE', 'HandleVisibility', 'off');
     plot(t2(tpeak2), ymax2, 'Marker', '.', 'Color', '#DD5400', 'HandleVisibility', 'off');
+    % Return step response time parameters (with settling time defined as +-10% threshold)
+    S1 = stepinfo(y1, t1, SettlingTimeThreshold=0.1);
+    S2 = stepinfo(y2, t2, SettlingTimeThreshold=0.1);
 end
 
 function plot_poles_zeros(n1, d1, d2)
@@ -72,6 +76,7 @@ function plot_poles_zeros(n1, d1, d2)
     % Create a new figure so that the time-domain plot can be accessed separately
     figure;
     title({'Pole-Zero Plot', ''}); % Empty string in cell array adds vertical padding
+    set(gcf, 'Color', 'w')
     xlabel('\sigma');
     ylabel('j\omega');
     grid;
@@ -79,6 +84,7 @@ function plot_poles_zeros(n1, d1, d2)
     ax = gca;
     ax.XAxisLocation = 'origin';
     ax.YAxisLocation = 'origin';
+    axis equal;
     % Change figure limits to square
     max_extent = max(abs(poles))+1;
     xlim([-max_extent max_extent]);
@@ -97,12 +103,6 @@ function plot_poles_zeros(n1, d1, d2)
     text(real(poi), imag(poi)+1, labels, 'HorizontalAlignment', 'center', 'FontSize', 10);
 end
 
-function get_transient_parameters(n1, d1, n2, d2)
-    sys1 = tf(n1, d1);
-    sys2 = tf(n2, d2);
-    fprintf("NOT IMPLEMENTED")
-end
-
 function get_s_domain_parameters(n1, d1, n2, d2)
     sys1 = tf(n1, d1);
     sys2 = tf(n2, d2);
@@ -116,5 +116,5 @@ fprintf("Simplified lower order transfer function:")
 Tdp_s = tf(numerator2, denominator2)
 
 % Call functions
-plot_step_response(numerator1, denominator1, numerator2, denominator2)
+[S1, S2] = plot_step_response(numerator1, denominator1, numerator2, denominator2)
 plot_poles_zeros(numerator1, denominator1, denominator2)
