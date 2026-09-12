@@ -24,16 +24,16 @@ function [S1, S2] = plot_step_response(n1, d1, n2, d2)
     legend('5th Order System', '2nd Order Approximation');
     hold;
     yss = n1(end) / d1(end);
-    yline([yss*0.9 yss*1.1], '--', {'0.9y_{ss}', '1.1y_{ss}'}, ...
+    yline([yss*0.95 yss*1.05], '--', {'0.95y_{ss}', '1.05y_{ss}'}, ...
         'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'middle', ...
         'HandleVisibility', 'off', 'Color', '#000000');
-    patch([xlim fliplr(xlim)], [0.9*yss 0.9*yss 1.1*yss 1.1*yss], [1.0 0.7 0.15], ...
+    patch([xlim fliplr(xlim)], [0.95*yss 0.95*yss 1.05*yss 1.05*yss], [1.0 0.7 0.15], ...
         'FaceAlpha', 0.05, 'EdgeColor', 'none', 'HandleVisibility', 'off');
-    % Get step response time parameters (with settling time defined as +-10% threshold)
+    % Get step response time parameters (with settling time defined as +-5% threshold)
     [y1, t1] = step(sys1);
     [y2, t2] = step(sys2);
-    S1 = stepinfo(y1, t1, SettlingTimeThreshold=0.1);
-    S2 = stepinfo(y2, t2, SettlingTimeThreshold=0.1);
+    S1 = stepinfo(y1, t1, SettlingTimeThreshold=0.05);
+    S2 = stepinfo(y2, t2, SettlingTimeThreshold=0.05);
     % Calculate delay times and add to step info structs
     delay1 = find(y1 >= 0.5*yss, 1, 'first');
     delay2 = find(y2 >= 0.5*yss, 1, 'first');
@@ -82,7 +82,6 @@ function plot_poles_zeros(n1, d1, d2)
     max_extent = max(abs(poles))+1;
     xlim([-max_extent max_extent]);
     ylim([-max_extent max_extent]);
-    % Plot poles and zeros with appropriate markers
     hold on;
     count = 0;
     for z = poles.'
@@ -97,6 +96,7 @@ function plot_poles_zeros(n1, d1, d2)
             text(r*0.707+0.2, r*0.707+0.2, sprintf('\\omega_{n%d} = 2\\pi\\cdot%.3f', count, r/2/pi));
         end
     end
+    % Plot poles and zeros with appropriate markers
     plot(real(poles), imag(poles), 'bx', 'MarkerSize', 9, 'LineWidth', 1);
     plot(real(zeros), imag(zeros), 'bo', 'MarkerSize', 7, 'LineWidth', 1);
     plot(real(dominantpoles), imag(dominantpoles), 'rx', 'MarkerSize', 9, 'LineWidth', 1);
