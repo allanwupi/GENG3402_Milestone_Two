@@ -11,10 +11,10 @@ syms s
 % Set dominant poles (complex conjugate pair)
 DOMINANT_POLES = (s+1-4j) * (s+1+4j);
 % Add nondominant poles for higher-order transfer function
-HIGHER_ORDER_POLES = (s+7) * (s+5-9j) * (s+5+9j) ...
+HIGHER_ORDER_POLES = (s+10) * (s+7) * (s+5-9j) * (s+5+9j) ...
     * DOMINANT_POLES;
 % Add zeros into higher-order transfer function
-ZEROS = (s+5)*(s+6+8j)*(s+6-8j);
+ZEROS = (s+6+8j) * (s+6-8j) * (s+5);
 
 K = 1/DC_GAIN * (subs(expand(ZEROS), s, 0) / subs(expand(HIGHER_ORDER_POLES), s, 0));
 denominator1 = sym2poly(K * expand(HIGHER_ORDER_POLES));
@@ -42,10 +42,10 @@ function plot_step_response(n1, d1, n2, d2)
     legend('Higher Order System', 'Dominant Poles Approximation');
     hold;
     yss = n1(end) / d1(end);
-    yline([yss*0.9 yss yss*1.1], '--', {'0.9y_{ss}  ', 'y_{ss}  ', '1.1y_{ss}  '}, ...
+    yline([yss*0.9 yss yss*1.1], '--', {'0.9y_{ss}', 'y_{ss}', '1.1y_{ss}'}, ...
         'HandleVisibility', 'off', 'Color', '#000000');
-    [y1, t] = step(sys1);
-    [y2, ~] = step(sys2);
+    [y1, t1] = step(sys1);
+    [y2, t2] = step(sys2);
     [ymax1, tpeak1] = max(y1);
     [ymax2, tpeak2] = max(y2);
     yline(ymax1, 'LineStyle', '-.', 'HandleVisibility', 'off', 'Color', '#1171BE', ...
@@ -54,13 +54,14 @@ function plot_step_response(n1, d1, n2, d2)
     yline(ymax2, 'LineStyle', '-.', 'HandleVisibility', 'off', 'Color', '#DD5400', ...
         'Label', sprintf('%.1f', ymax2), ...
         'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'middle');
-    xline(t(tpeak1), 'LineStyle', '-.', 'Color', '#1171BE', 'HandleVisibility', 'off', ...
-        'Label', sprintf('  %.3f', t(tpeak1)), ...
+    xline(t1(tpeak1), 'LineStyle', '-.', 'Color', '#1171BE', 'HandleVisibility', 'off', ...
+        'Label', sprintf('%.3f', t1(tpeak1)), ...
         'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'bottom');
-    xline(t(tpeak2), 'LineStyle', '-.', 'Color', '#DD5400', 'HandleVisibility', 'off', ...
-        'Label', sprintf('  %.3f', t(tpeak2)), ...
+    xline(t2(tpeak2), 'LineStyle', '-.', 'Color', '#DD5400', 'HandleVisibility', 'off', ...
+        'Label', sprintf('%.3f', t2(tpeak2)), ...
         'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'bottom');
-    plot([t(tpeak1); t(tpeak2)], [ymax1; ymax2], 'k.', 'HandleVisibility', 'off');
+    plot(t1(tpeak1), ymax1, 'Marker', '.', 'Color', '#1171BE', 'HandleVisibility', 'off');
+    plot(t2(tpeak2), ymax2, 'Marker', '.', 'Color', '#DD5400', 'HandleVisibility', 'off');
 end
 
 function plot_poles_zeros(n1, d1, d2)
@@ -84,7 +85,7 @@ function plot_poles_zeros(n1, d1, d2)
     ylim([-max_extent max_extent]);
     % Plot poles and zeros with appropriate markers
     hold on;
-    plot(real(zeros), imag(zeros), 'bo', 'MarkerSize', 8, 'LineWidth', 1);
+    plot(real(zeros), imag(zeros), 'bo', 'MarkerSize', 7, 'LineWidth', 1);
     plot(real(poles), imag(poles), 'bx', 'MarkerSize', 10, 'LineWidth', 1);
     plot(real(dominantpoles), imag(dominantpoles), 'rx', 'MarkerSize', 10, 'LineWidth', 1);
     legend('Poles', 'Zeros', 'Dominant Poles')

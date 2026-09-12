@@ -23,8 +23,8 @@ function plot_step_response(n1, d1, n2, d2)
     yss = n1(end) / d1(end);
     yline([yss*0.9 yss yss*1.1], '--', {'0.9y_{ss}', 'y_{ss}', '1.1y_{ss}'}, ...
         'HandleVisibility', 'off', 'Color', '#000000');
-    [y1, t] = step(sys1);
-    [y2, ~] = step(sys2);
+    [y1, t1] = step(sys1);
+    [y2, t2] = step(sys2);
     [ymax1, tpeak1] = max(y1);
     [ymax2, tpeak2] = max(y2);
     yline(ymax1, 'LineStyle', '-.', 'HandleVisibility', 'off', 'Color', '#1171BE', ...
@@ -33,13 +33,14 @@ function plot_step_response(n1, d1, n2, d2)
     yline(ymax2, 'LineStyle', '-.', 'HandleVisibility', 'off', 'Color', '#DD5400', ...
         'Label', sprintf('%.1f', ymax2), ...
         'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'middle');
-    xline(t(tpeak1), 'LineStyle', '-.', 'Color', '#1171BE', 'HandleVisibility', 'off', ...
-        'Label', sprintf('%.3f', t(tpeak1)), ...
+    xline(t1(tpeak1), 'LineStyle', '-.', 'Color', '#1171BE', 'HandleVisibility', 'off', ...
+        'Label', sprintf('%.3f', t1(tpeak1)), ...
         'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'bottom');
-    xline(t(tpeak2), 'LineStyle', '-.', 'Color', '#DD5400', 'HandleVisibility', 'off', ...
-        'Label', sprintf('%.3f', t(tpeak2)), ...
+    xline(t2(tpeak2), 'LineStyle', '-.', 'Color', '#DD5400', 'HandleVisibility', 'off', ...
+        'Label', sprintf('%.3f', t2(tpeak2)), ...
         'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'bottom');
-    plot([t(tpeak1); t(tpeak2)], [ymax1; ymax2], 'k.', 'HandleVisibility', 'off');
+    plot(t1(tpeak1), ymax1, 'Marker', '.', 'Color', '#1171BE', 'HandleVisibility', 'off');
+    plot(t2(tpeak2), ymax2, 'Marker', '.', 'Color', '#DD5400', 'HandleVisibility', 'off');
 end
 
 function plot_poles_zeros(n1, d1, d2)
@@ -63,9 +64,9 @@ function plot_poles_zeros(n1, d1, d2)
     ylim([-max_extent max_extent]);
     % Plot poles and zeros with appropriate markers
     hold on;
-    plot(real(zeros), imag(zeros), 'bo', 'MarkerSize', 8, 'LineWidth', 1);
-    plot(real(poles), imag(poles), 'bx', 'MarkerSize', 10, 'LineWidth', 1);
-    plot(real(dominantpoles), imag(dominantpoles), 'rx', 'MarkerSize', 10, 'LineWidth', 1);
+    plot(real(zeros), imag(zeros), 'bo', 'MarkerSize', 7, 'LineWidth', 1);
+    plot(real(poles), imag(poles), 'bx', 'MarkerSize', 9, 'LineWidth', 1);
+    plot(real(dominantpoles), imag(dominantpoles), 'rx', 'MarkerSize', 9, 'LineWidth', 1);
     legend('Poles', 'Zeros', 'Dominant Poles')
     % Add coordinate labels to all points
     poi = [zeros; poles];
