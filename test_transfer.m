@@ -40,7 +40,7 @@ function [S1, S2] = plot_step_response(n1, d1, n2, d2)
     stepplot(sys1, sys2);
     set(gcf, 'Color', 'w')
     grid;
-    legend('5th Order System', 'Second Order Approximation');
+    legend('5th Order System', '2nd Order Approximation');
     hold;
     yss = n1(end) / d1(end);
     yline([yss*0.9 yss yss*1.1], '--', {'0.9y_{ss}', 'y_{ss}', '1.1y_{ss}'}, ...
@@ -63,9 +63,14 @@ function [S1, S2] = plot_step_response(n1, d1, n2, d2)
         'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'bottom');
     plot(t1(tpeak1), ymax1, 'Marker', '.', 'Color', '#1171BE', 'HandleVisibility', 'off');
     plot(t2(tpeak2), ymax2, 'Marker', '.', 'Color', '#DD5400', 'HandleVisibility', 'off');
-    % Return step response time parameters (with settling time defined as +-10% threshold)
+    % Get step response time parameters (with settling time defined as +-10% threshold)
     S1 = stepinfo(y1, t1, SettlingTimeThreshold=0.1);
     S2 = stepinfo(y2, t2, SettlingTimeThreshold=0.1);
+    % Calculate delay times and add to step info structs
+    delay1 = find(y1 >= 0.5*yss, 1, 'first');
+    delay2 = find(y2 >= 0.5*yss, 1, 'first');
+    S1.DelayTime = t1(delay1);
+    S2.DelayTime = t2(delay2);
 end
 
 function plot_poles_zeros(n1, d1, d2)
