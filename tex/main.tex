@@ -1,0 +1,28 @@
+\documentclass{report}
+\usepackage{amsmath}
+
+\title{The Dominant Pole Approximation}
+\author{Allan Wu}
+\date{\today}
+
+\begin{document}
+
+\maketitle{}
+
+\section*{Higher-Order Transfer Function}
+
+The transfer function we will analyse is 5th order:
+\begin{align*}
+T(s) &= \frac{12614(s+5)(s+6-j8)(s+6+j8)}{5(s+7)(s+5-j9)(s+5+j9)(s+1-j4)(s+1+j4)} \\
+&= \frac{12614 s^3 + 214438 s^2 + 2018240 s + 6307000}{5 s^5 + 95 s^4 + 1135 s^3 + 6915 s^2 + 22375 s + 63070}
+\end{align*}
+
+\section*{Dominant Pole Approximation}
+
+The simplified transfer function is:
+\begin{align*}
+T_{dp}(s) &= \frac{1700}{(s+1-j4)(s+1+j4)} \\
+&= \frac{1700}{s^2 + 2s + 17}
+\end{align*}
+
+\end{document}
