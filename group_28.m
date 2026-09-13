@@ -36,19 +36,16 @@ function [S1, S2] = plot_step_response(n1, d1, n2, d2)
     p = patch([xlim fliplr(xlim)], [0.95*yss 0.95*yss 1.05*yss 1.05*yss], [1.0 0.7 0.15], ...
         'FaceAlpha', 0.08, 'EdgeColor', 'none', 'HandleVisibility', 'off');
     uistack(p, 'bottom');
-    % Get step response time parameters, using 5% as threshold value
+    % Get step response time parameters, using 5% as threshold value and the exact yss value
     [y1, t1] = step(sys1);
     [y2, t2] = step(sys2);
-    S1 = stepinfo(y1, t1, SettlingTimeThreshold=0.05);
-    S2 = stepinfo(y2, t2, SettlingTimeThreshold=0.05);
+    S1 = stepinfo(y1, t1, yss, SettlingTimeThreshold=0.05);
+    S2 = stepinfo(y2, t2, yss, SettlingTimeThreshold=0.05);
     % Calculate delay times and add to step info structs
     delay1 = find(y1 >= 0.5*yss, 1, 'first');
     delay2 = find(y2 >= 0.5*yss, 1, 'first');
     S1.DelayTime = t1(delay1);
     S2.DelayTime = t2(delay2);
-    % Overwrite overshoot values using the exact DC gain of 100, instead of last sample
-    S1.Overshoot = S1.SettlingMax - 100;
-    S2.Overshoot = S2.SettlingMax - 100;
     % Draw annotation lines: maximum overshoots, peak times, settling error, settling times
     yline(S1.Peak, 'LineStyle', '-.', 'HandleVisibility', 'off', 'Color', '#1171BE', ...
         'Label', sprintf('%.1f', S1.Peak), ...
