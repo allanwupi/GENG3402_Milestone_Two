@@ -1,8 +1,8 @@
 %% GENG3402 Assignment 2 MATLAB Script - Group 28 - Allan Wu (2810308).
-% In line with assignment requirements, I have only used these MATLAB Control Systems Toolbox commands
-% 1. tf (transfer function to represent system)
-% 2. stepplot (plot of step response)
-% 3. stepinfo (for transient response parameters)
+% In line with assignment requirements, I have only used commands from MATLAB Control Systems Toolbox:
+% 1. tf (system representation with transfer function)
+% 2. stepplot (plots step response)
+% 3. stepinfo (calculates transient response parameters)
 
 %% Transfer function definitions
 % Higher-order transfer function T(s), M=3 zeros, N=5 poles.
@@ -36,14 +36,17 @@ function [S1, S2] = plot_step_response(n1, d1, n2, d2)
     p = patch([xlim fliplr(xlim)], [0.95*yss 0.95*yss 1.05*yss 1.05*yss], [1.0 0.7 0.15], ...
         'FaceAlpha', 0.08, 'EdgeColor', 'none', 'HandleVisibility', 'off');
     uistack(p, 'bottom');
-    % Get step response time parameters, using 5% as threshold value and the exact yss value
-    [y1, t1] = step(sys1);
-    [y2, t2] = step(sys2);
+    % Define a fine time vector to increase the precision of step response data over defaults
+    t = (0:0.001:50)';
+    [y1, t1] = step(sys1, t);
+    [y2, t2] = step(sys2, t);
+    % Get step response time parameters, setting 5% as the threshold value and the exact yss value
     S1 = stepinfo(y1, t1, yss, SettlingTimeThreshold=0.05);
     S2 = stepinfo(y2, t2, yss, SettlingTimeThreshold=0.05);
     % Calculate delay times and add to step info structs
-    delay1 = find(y1 >= 0.5*yss, 1, 'first');
-    delay2 = find(y2 >= 0.5*yss, 1, 'first');
+    halfYss = 0.5*yss;
+    delay1 = find(y1 >= halfYss, 1, 'first');
+    delay2 = find(y2 >= halfYss, 1, 'first');
     S1.DelayTime = t1(delay1);
     S2.DelayTime = t2(delay2);
     % Draw annotation lines: maximum overshoots, peak times, settling error, settling times
