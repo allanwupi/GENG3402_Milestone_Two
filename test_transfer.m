@@ -14,7 +14,7 @@ DOMINANT_POLES = (s+1-4j) * (s+1+4j);
 HIGHER_ORDER_POLES = (s+7) * (s+5-9j) * (s+5+9j) ...
     * DOMINANT_POLES;
 % Add zeros into higher-order transfer function
-ZEROS = (s+6-8j) * (s+6+8j) * (s+5);
+ZEROS = (s+25); %(s+6-8j) * (s+6+8j) * 
 
 K = 1/DC_GAIN * (subs(expand(ZEROS), s, 0) / subs(expand(HIGHER_ORDER_POLES), s, 0));
 denominator1 = sym2poly(K * expand(HIGHER_ORDER_POLES));

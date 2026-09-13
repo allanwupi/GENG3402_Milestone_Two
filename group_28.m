@@ -27,8 +27,9 @@ function [S1, S2] = plot_step_response(n1, d1, n2, d2)
     yline([yss*0.95 yss*1.05], '--', {'0.95y_{ss}', '1.05y_{ss}'}, ...
         'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'middle', ...
         'HandleVisibility', 'off', 'Color', '#000000');
-    patch([xlim fliplr(xlim)], [0.95*yss 0.95*yss 1.05*yss 1.05*yss], [1.0 0.7 0.15], ...
+    p = patch([xlim fliplr(xlim)], [0.95*yss 0.95*yss 1.05*yss 1.05*yss], [1.0 0.7 0.15], ...
         'FaceAlpha', 0.05, 'EdgeColor', 'none', 'HandleVisibility', 'off');
+    uistack(p, 'bottom');
     % Get step response time parameters (with settling time defined as +-5% threshold)
     [y1, t1] = step(sys1);
     [y2, t2] = step(sys2);
@@ -103,16 +104,16 @@ function plot_poles_zeros(n1, d1, d2)
     legend('Poles', 'Zeros', 'Dominant Poles')
     % Add coordinate labels to all points
     poi = [zeros; poles];
-    signs = repmat("+", size(poi));
-    signs(imag(poi) < 0) = "-";
+    signs = repmat('+', size(poi));
+    signs(imag(poi) < 0) = '-';
     labels = compose("%.0f%sj%.0f", real(poi), signs, abs(imag(poi)));
     text(real(poi), imag(poi)+1, labels, 'HorizontalAlignment', 'center', 'FontSize', 10);
 end
 
-fprintf("Higher order transfer function:")
+fprintf('Higher order transfer function:')
 T_s = tf(NUM1, DEN1)
 
-fprintf("Simplified lower order transfer function:")
+fprintf('Simplified lower order transfer function:')
 Tdp_s = tf(NUM2, DEN2)
 
 % Plot step response and print time parameters
