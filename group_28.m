@@ -46,6 +46,9 @@ function [S1, S2] = plot_step_response(n1, d1, n2, d2)
     delay2 = find(y2 >= 0.5*yss, 1, 'first');
     S1.DelayTime = t1(delay1);
     S2.DelayTime = t2(delay2);
+    % Overwrite overshoot values using the exact DC gain of 100, instead of last sample
+    S1.Overshoot = S1.SettlingMax - 100;
+    S2.Overshoot = S2.SettlingMax - 100;
     % Draw annotation lines: maximum overshoots, peak times, settling error, settling times
     yline(S1.Peak, 'LineStyle', '-.', 'HandleVisibility', 'off', 'Color', '#1171BE', ...
         'Label', sprintf('%.1f', S1.Peak), ...
