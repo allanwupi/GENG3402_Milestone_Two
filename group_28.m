@@ -7,7 +7,7 @@
 %% Transfer function definitions
 % Higher-order transfer function T(s), M=3 zeros, N=5 poles.
 NUM1 = [12614 214438 2018240 6307000];
-DEN1 = [5 95 1135 6915 22385 63070];
+DEN1 = [5 95 1135 6915 22380 63070];
 
 % Simplified second-order function T_dp(s).
 NUM2 = [1700];
@@ -19,11 +19,13 @@ DEN2 = [1 2 17];
 % - Figure: time-domain unit step response plot of both transfer functions
 % - Two structs containing the transient-response parameters 
 function [S1, S2] = plot_step_response(n1, d1, n2, d2)
+    % Define a very fine time vector to increase the precision of step response data over defaults
+    t = (0:0.0001:10)';
     sys1 = tf(n1, d1);
     sys2 = tf(n2, d2);
     % Use stepplot function provided by Control System Toolbox for unit step response
     figure;
-    stepplot(sys1, sys2);
+    stepplot(sys1, sys2, t);
     set(gcf, 'Color', 'w')
     grid;
     legend('5th Order System', '2nd Order Approximation');
@@ -36,8 +38,6 @@ function [S1, S2] = plot_step_response(n1, d1, n2, d2)
     p = patch([xlim fliplr(xlim)], [0.95*yss 0.95*yss 1.05*yss 1.05*yss], [1.0 0.7 0.15], ...
         'FaceAlpha', 0.08, 'EdgeColor', 'none', 'HandleVisibility', 'off');
     uistack(p, 'bottom');
-    % Define a fine time vector to increase the precision of step response data over defaults
-    t = (0:0.001:50)';
     [y1, t1] = step(sys1, t);
     [y2, t2] = step(sys2, t);
     % Get step response time parameters, setting 5% as the threshold value and the exact yss value

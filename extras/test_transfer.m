@@ -33,32 +33,37 @@ numerator2 = sym2poly(DC_GAIN * denominator2(end) + 0*s);
 % - Print the s-domain parameters (wn, zeta) for each complex conjugate pole pair
 
 function [S1, S2] = plot_step_response(n1, d1, n2, d2)
+% Define a very fine time vector to increase the precision of step response data over defaults
+    t = (0:0.0001:10)';
     sys1 = tf(n1, d1);
     sys2 = tf(n2, d2);
-    % Use stepplot function provided by Control System Toolbox (unit step response)
+    % Use stepplot function provided by Control System Toolbox for unit step response
     figure;
-    stepplot(sys1, sys2);
+    stepplot(sys1, sys2, t);
     set(gcf, 'Color', 'w')
     grid;
     legend('5th Order System', '2nd Order Approximation');
     hold;
     yss = n1(end) / d1(end);
+    % Shade in the settling error bound (95% to 105% of final value)
     yline([yss*0.95 yss*1.05], '--', {'0.95y_{ss}', '1.05y_{ss}'}, ...
         'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'middle', ...
         'HandleVisibility', 'off', 'Color', '#000000');
     p = patch([xlim fliplr(xlim)], [0.95*yss 0.95*yss 1.05*yss 1.05*yss], [1.0 0.7 0.15], ...
-        'FaceAlpha', 0.05, 'EdgeColor', 'none', 'HandleVisibility', 'off');
+        'FaceAlpha', 0.08, 'EdgeColor', 'none', 'HandleVisibility', 'off');
     uistack(p, 'bottom');
-    % Get step response time parameters (with settling time defined as +-5% threshold)
-    [y1, t1] = step(sys1);
-    [y2, t2] = step(sys2);
-    S1 = stepinfo(y1, t1, SettlingTimeThreshold=0.05);
-    S2 = stepinfo(y2, t2, SettlingTimeThreshold=0.05);
+    [y1, t1] = step(sys1, t);
+    [y2, t2] = step(sys2, t);
+    % Get step response time parameters, setting 5% as the threshold value and the exact yss value
+    S1 = stepinfo(y1, t1, yss, SettlingTimeThreshold=0.05);
+    S2 = stepinfo(y2, t2, yss, SettlingTimeThreshold=0.05);
     % Calculate delay times and add to step info structs
-    delay1 = find(y1 >= 0.5*yss, 1, 'first');
-    delay2 = find(y2 >= 0.5*yss, 1, 'first');
+    halfYss = 0.5*yss;
+    delay1 = find(y1 >= halfYss, 1, 'first');
+    delay2 = find(y2 >= halfYss, 1, 'first');
     S1.DelayTime = t1(delay1);
     S2.DelayTime = t2(delay2);
+    % Draw annotation lines: maximum overshoots, peak times, settling error, settling times
     yline(S1.Peak, 'LineStyle', '-.', 'HandleVisibility', 'off', 'Color', '#1171BE', ...
         'Label', sprintf('%.1f', S1.Peak), ...
         'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'middle');
@@ -73,12 +78,10 @@ function [S1, S2] = plot_step_response(n1, d1, n2, d2)
         'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'middle');
     xline(S2.PeakTime, 'LineStyle', '-.', 'Color', '#DD5400', 'HandleVisibility', 'off', ...
         'Label', sprintf('  %.3f', S2.PeakTime), ...
-        'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'bottom');
+        'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'bottom');
     xline(S2.SettlingTime, 'LineStyle', '-.', 'Color', '#DD5400', 'HandleVisibility', 'off', ...
         'Label', sprintf('  %.3f', S2.SettlingTime), ...
         'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'bottom');
-    plot(S1.PeakTime, S1.Peak, 'Marker', 'x', 'MarkerSize', 9, 'Color', '#1171BE', 'HandleVisibility', 'off');
-    plot(S2.PeakTime, S2.Peak, 'Marker', 'x', 'MarkerSize', 9, 'Color', '#DD5400', 'HandleVisibility', 'off');
 end
 
 function plot_poles_zeros(n1, d1, d2)
