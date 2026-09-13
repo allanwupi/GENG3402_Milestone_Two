@@ -1,22 +1,27 @@
-%% Group 28 - MATLAB Scripts
+%% GENG3402 Assignment 2 MATLAB Script - Group 28 - Allan Wu (2810308).
+% In line with assignment requirements, I have only used these MATLAB Control Systems Toolbox commands
+% 1. tf (transfer function to represent system)
+% 2. stepplot (plot of step response)
+% 3. stepinfo (for transient response parameters)
 
-%% Functions for time-domain and s-domain analysis
-% Inputs: 2 transfer functions, given as arrays of numerator/denominator coefficients (descending powers)
-% We define functions to get the following: 
-% - Generate time-domain step response plot (transient response)
-% - Generate s-domain pole-zero plot
-% - Print the transient response parameters (PO, td, tr, ts, ess)
-% - Print the s-domain parameters (wn, zeta) for each complex conjugate pole pair
-
+%% Transfer function definitions
+% Higher-order transfer function T(s), M=3 zeros, N=5 poles.
 NUM1 = [12614 214438 2018240 6307000];
 DEN1 = [5 95 1135 6915 22385 63070];
+
+% Simplified second-order function T_dp(s).
 NUM2 = [1700];
 DEN2 = [1 2 17];
 
+%% Time-domain analysis
+% Inputs are 2 transfer functions, given as arrays of numerator/denominator coefficients, descending powers.
+% Outputs are:
+% - Figure: time-domain unit step response plot of both transfer functions
+% - Two structs containing the transient-response parameters 
 function [S1, S2] = plot_step_response(n1, d1, n2, d2)
     sys1 = tf(n1, d1);
     sys2 = tf(n2, d2);
-    % Use stepplot function provided by Control System Toolbox (unit step response)
+    % Use stepplot function provided by Control System Toolbox for unit step response
     figure;
     stepplot(sys1, sys2);
     set(gcf, 'Color', 'w')
@@ -28,13 +33,13 @@ function [S1, S2] = plot_step_response(n1, d1, n2, d2)
         'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'middle', ...
         'HandleVisibility', 'off', 'Color', '#000000');
     p = patch([xlim fliplr(xlim)], [0.95*yss 0.95*yss 1.05*yss 1.05*yss], [1.0 0.7 0.15], ...
-        'FaceAlpha', 0.05, 'EdgeColor', 'none', 'HandleVisibility', 'off');
+        'FaceAlpha', 0.08, 'EdgeColor', 'none', 'HandleVisibility', 'off');
     uistack(p, 'bottom');
     % Get step response time parameters (with settling time defined as +-5% threshold)
     [y1, t1] = step(sys1);
     [y2, t2] = step(sys2);
-    S1 = stepinfo(y1, t1, SettlingTimeThreshold=0.05);
-    S2 = stepinfo(y2, t2, SettlingTimeThreshold=0.05);
+    S1 = stepinfo(y1, t1, SettlingTimeThreshold=0.02);
+    S2 = stepinfo(y2, t2, SettlingTimeThreshold=0.02);
     % Calculate delay times and add to step info structs
     delay1 = find(y1 >= 0.5*yss, 1, 'first');
     delay2 = find(y2 >= 0.5*yss, 1, 'first');
@@ -62,8 +67,13 @@ function [S1, S2] = plot_step_response(n1, d1, n2, d2)
     plot(S2.PeakTime, S2.Peak, 'Marker', '.', 'Color', '#DD5400', 'HandleVisibility', 'off');
 end
 
+%% S-domain analysis
+% Inputs are 2 transfer functions, given as arrays of numerator/denominator coefficients, descending powers.
+% Outputs are:
+% - Figure: pole-zero plot of the higher-order transfer function, dominant poles highlighted.
+% - Print the s-domain parameters of complex poles to display
 function plot_poles_zeros(n1, d1, d2)
-    % Note: no need to pass in numerator of the second-order function (as there are no zeros)
+    % Note: No need to pass in numerator of the second-order function (as there are no zeros)
     zeros = roots(n1);
     poles = roots(d1);
     dominantpoles = roots(d2);
@@ -95,9 +105,12 @@ function plot_poles_zeros(n1, d1, d2)
             y_circle = r * sin(theta);
             plot(x_circle, y_circle, 'LineStyle', '--', 'HandleVisibility', 'off');
             text(r*0.707+0.2, r*0.707+0.2, sprintf('\\omega_{n%d} = 2\\pi\\cdot%.3f', count, r/2/pi));
+            % Print the s-domain parameters
+            fprintf('s = %.0f ± j%.0f: w_n = 2pi(%.3f), w_d = 2pi(%.3f), damping = %.3f\n', ...
+                real(z), imag(z), abs(z)/2/pi, imag(z)/2/pi, -real(z)/abs(z));
         end
     end
-    % Plot poles and zeros with appropriate markers
+    % Plot poles and zeros with appropriate o/x markers
     plot(real(poles), imag(poles), 'bx', 'MarkerSize', 9, 'LineWidth', 1);
     plot(real(zeros), imag(zeros), 'bo', 'MarkerSize', 7, 'LineWidth', 1);
     plot(real(dominantpoles), imag(dominantpoles), 'rx', 'MarkerSize', 9, 'LineWidth', 1);
@@ -112,12 +125,10 @@ end
 
 fprintf('Higher order transfer function:')
 T_s = tf(NUM1, DEN1)
-
 fprintf('Simplified lower order transfer function:')
 Tdp_s = tf(NUM2, DEN2)
 
 % Plot step response and print time parameters
 [S1, S2] = plot_step_response(NUM1, DEN1, NUM2, DEN2)
-
-% Plot locations of poles and zeros
+% Plot locations of poles and zeros and print s-domain parameters
 plot_poles_zeros(NUM1, DEN1, DEN2)

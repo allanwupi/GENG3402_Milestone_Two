@@ -1,0 +1,91 @@
+\documentclass[12pt]{article}
+
+\usepackage[english]{babel}
+\usepackage[a4paper,top=1.5cm,bottom=1.5cm,left=2cm,right=2cm,marginparwidth=1.75cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{booktabs}
+
+\title{The Dominant Pole Approximation}
+\author{Allan Wu}
+\date{\today}
+
+\begin{document}
+
+\maketitle{}
+
+\section*{Introduction and Revision}
+
+We give a brief overview of the following topics:
+\begin{enumerate}
+\item The standard second-order transfer function
+\item Underdamped systems and examples
+\item Higher-order systems and examples
+\item The dominant pole approximation (concept)
+\end{enumerate}
+
+\section*{Demonstration and Analysis}
+
+\subsection*{Transfer Functions}
+
+We consider a 5th order underdamped system characterised by the transfer function:
+\begin{align*}
+T(s) &= \frac{12614(s+5)(s+6-j8)(s+6+j8)}{5(s+7)(s+5-j9)(s+5+j9)(s+1-j4)(s+1+j4)} \\
+&= \frac{12614 s^3 + 214438 s^2 + 2018240 s + 6307000}{5 s^5 + 95 s^4 + 1135 s^3 + 6915 s^2 + 22375 s + 63070}
+\end{align*}
+
+Observing that all poles have real parts at least 5 times greater than the pair of dominant poles closest to the $j\omega$-axis, we can apply the simplification procedure.
+\begin{enumerate}
+\item Include the pair of dominant poles closest to the imaginary axis (i.e. the smallest real part) in the denominator polynomial. Remove the other poles.
+\item Match the DC gain of the original transfer function. That is, multiply the numerator by an appropriate constant so that $T\left(0\right)=T_{dp}\left(0\right).$
+\end{enumerate}
+
+By applying the dominant pole approximation, we obtain a simplified 2nd order transfer function:
+\begin{align*}
+T_{dp}(s) &= \frac{1700}{(s+1-j4)(s+1+j4)} \\
+&= \frac{1700}{s^2 + 2s + 17}
+\end{align*}
+
+\subsection*{Time Domain Analysis}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{stepplot.png}
+\caption{Annotated step response of the original and simplified transfer functions.}
+\label{fig:stepplot}
+\end{figure}
+
+\subsection*{S-Domain Analysis}
+\begin{figure}
+\centering
+\includegraphics[width=0.6\linewidth]{pzplot.png}
+\caption{Poles and zeros of the transfer function.}
+\label{fig:pzplot}
+\end{figure}
+
+\subsection*{Comparative Analysis and Discussion}
+
+TABLE 3. S-DOMAIN PARAMETERS
+\begin{table}[h]
+\centering
+\caption{S-DOMAIN PARAMETERS.}
+\label{tab:sparams}
+\begin{tabular}{cccc}\toprule
+Pole        &Natural frequency ${\omega }_{n}$ &Damped frequency ${\omega }_{d}$ &Damping ratio $\zeta$ \\ \midrule
+$-1\pm j4$  &$2\pi\cdot 0.656$	&$2\pi\cdot 0.637$   &$0.243$ \\
+$-5\pm j9$  &$2\pi\cdot 1.639$	&$2\pi\cdot 1.432$   &$0.486$ \\
+$-7+j0$	    &$2\pi\cdot 1.114$	&$0 \left(DC\right)$	&$1.000$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section*{References}
+\begin{enumerate}[label={[\arabic*]}]
+\item Dorf, R.C. and Bishop, R.H. (2005) \textit{Modern Control Systems} (13th ed). Section 5.4 ``Effects of a Third Pole and a Zero on the Second-Order System Response''
+\item Ogata, K. (2010) \textit{Modern Control Engineering} (5th ed). Section 5.4 "Higher-Order Systems"
+\end{enumerate}
+
+\end{document}
