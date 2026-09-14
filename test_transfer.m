@@ -23,7 +23,6 @@ numerator1 = sym2poly(expand(ZEROS));
 denominator2 = sym2poly(expand(DOMINANT_POLES));
 numerator2 = sym2poly(DC_GAIN * denominator2(end) + 0*s);
 
-
 %% Functions for time-domain and s-domain analysis
 % Inputs: 2 transfer functions, given as arrays of numerator/denominator coefficients (descending powers)
 % We define functions to get the following: 
@@ -147,3 +146,13 @@ Tdp_s = tf(numerator2, denominator2)
 % Call functions
 [S1, S2] = plot_step_response(numerator1, denominator1, numerator2, denominator2)
 plot_poles_zeros(numerator1, denominator1, denominator2)
+
+syms t real
+expr = 1/s * expand(1/K * ZEROS / HIGHER_ORDER_POLES);
+%expr = expand(1/s * 17 / (s*s + 2*s + 17))
+partFracExpr = partfrac(expr, 'FactorMode', 'real');
+realVal = vpa(partFracExpr, 8)
+
+timeFunc = ilaplace(partFracExpr)
+finalFunc = vpa(simplify(real(expand(timeFunc)), ...
+    'IgnoreAnalyticConstraints', true), 5)

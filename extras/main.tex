@@ -37,6 +37,16 @@ T(s) &= \frac{12614(s+5)(s+6-j8)(s+6+j8)}{5(s+7)(s+5-j9)(s+5+j9)(s+1-j4)(s+1+j4)
 &= \frac{12614 s^3 + 214438 s^2 + 2018240 s + 6307000}{5 s^5 + 95 s^4 + 1135 s^3 + 6915 s^2 + 22380 s + 63070}
 \end{align*}
 
+Using partial fraction expansion:
+\begin{equation}
+T(s) = \mathcal{L}^{-1} \left\{ \frac{10.6}{s+7}+\frac{3.747 s-38.1656}{s^{2}+10 s+106}-\frac{114.3472 s+78.8565}{s^{2}+2 s+17}+\frac{100}{s} \right\}
+\end{equation}
+
+After applying the inverse Laplace transform, the expression for the transient response is given by:
+\begin{align*}
+\left[ 10.6e^{-7t}+e^{-5t}\left(3.747\cos9t-6.322\sin9t\right)-e^{-t}\left(114.3472\cos4t-8.873\sin4t\right)+100 \right] u(t)
+\end{align*}
+
 Observing that all poles have real parts at least 5 times greater than the pair of dominant poles closest to the $j\omega$-axis, we can apply the simplification procedure.
 \begin{enumerate}
 \item Include the pair of dominant poles closest to the imaginary axis (i.e. the smallest real part) in the denominator polynomial. Remove the other poles.
